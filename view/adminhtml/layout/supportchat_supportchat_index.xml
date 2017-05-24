@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+      <head>
+         <link src="Sourabh_SupportChat/js/notifyjs/Notify.js"/>
+     </head>
+    <body>
+         <referenceContainer name="content">
+            <block class="Sourabh\SupportChat\Block\Adminhtml\SupportChat\SupportChat" template="Sourabh_SupportChat::supportchat/supportchat.phtml"/>
+         </referenceContainer>
+
+    </body>
+</page>

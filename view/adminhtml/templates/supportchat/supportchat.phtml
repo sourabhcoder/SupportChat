@@ -1,0 +1,420 @@
+<div class="dropdown">
+<?php $notifcationUrl = $this->getViewFileUrl('Sourabh_SupportChat::images/new_message.png');//die($notifcationUrl);  ?>
+     <div onclick="myFunction()" id="idmaindivnoti" class="dropbtn"></div><div id="idnotifcount" style="float:left;margin-top:10px;margin-left:10px;color:red;"></div>
+  
+  <div id="myDropdown" class="dropdown-content">
+    
+  </div>
+</div>
+
+<p id="result"></p>
+
+<div id="notifications" ></div>
+
+
+        <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+
+        <div class="container invCls" id="idmainmsgcontainer" >
+    
+    <div class="row">
+
+        <div class="conversation-wrap col-lg-3" id="idmessagesdiv" >
+        </div>
+        <br>
+        <br>
+        <div>
+            <img width='25px' id="idloadgif" height='25px' style="display:none;" src ="<?php echo $this->getViewFileUrl('Sourabh_SupportChat::images/loading.gif'); ?>" />
+            <br>
+            <input type ="text" id="idmsgsend" class="msgsendcls" />
+        </div>
+    </div>
+    <input type="hidden" id="idcustomerid" value="" />
+    <input type="hidden" id="idvisitorid" value="" />
+</div>
+<style>
+    .msgsendcls
+    {
+        width:40%;
+        height:40px;
+    }
+    .invCls
+    {
+        visibility:hidden;
+    }
+    .visbCls
+    {
+        visibility:visible;
+    }
+    /*code the drop down starts*/
+    .dropbtn {
+    float:left;
+    background-color: white;
+    color: white;
+    padding: 16px;
+    font-size: 16px;
+    border: none;
+    min-width: 50px;
+    min-height: 50px;
+    cursor: pointer;
+    background-image: url(<?php echo $notifcationUrl; ?>);
+    background-size: 50px 50px;
+    background-repeat: no-repeat;
+}
+
+.dropbtn:hover, .dropbtn:focus {
+    background-color: white;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    overflow: auto;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown a:hover {background-color: #f1f1f1}
+
+.show {display:block;}
+/*Code for drop down ends*/
+
+/*Code for notify js desing starts*/
+#notifications {
+    cursor: pointer;
+    position: fixed;
+    right: 0px;
+    z-index: 9999;
+    bottom: 0px;
+    margin-bottom: 22px;
+    margin-right: 15px;
+    max-width: 300px;
+    background-color: green;
+}
+/*Code for notify js ends*/
+
+    .conversation-wrap
+    {
+        box-shadow: -2px 0 3px #ddd;
+        padding:0;
+        max-height: 400px;
+        overflow: auto;
+    }
+    .conversation
+    {
+        padding:5px;
+        border-bottom:1px solid #ddd;
+        margin:0;
+
+    }
+
+    .message-wrap
+    {
+        box-shadow: 0 0 3px #ddd;
+        padding:0;
+
+    }
+    .msg
+    {
+        padding:5px;
+        /*border-bottom:1px solid #ddd;*/
+        margin:0;
+    }
+    .msg-wrap
+    {
+        padding:10px;
+        max-height: 400px;
+        overflow: auto;
+
+    }
+
+    .time
+    {
+        color:#bfbfbf;
+    }
+
+    .send-wrap
+    {
+        border-top: 1px solid #eee;
+        border-bottom: 1px solid #eee;
+        padding:10px;
+        /*background: #f8f8f8;*/
+    }
+
+    .send-message
+    {
+        resize: none;
+    }
+
+    .highlight
+    {
+        background-color: #f7f7f9;
+        border: 1px solid #e1e1e8;
+    }
+
+    .send-message-btn
+    {
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+        border-bottom-left-radius: 0;
+
+        border-bottom-right-radius: 0;
+    }
+    .btn-panel
+    {
+        background: #f7f7f9;
+    }
+
+    .btn-panel .btn
+    {
+        color:#b8b8b8;
+
+        transition: 0.2s all ease-in-out;
+    }
+
+    .btn-panel .btn:hover
+    {
+        color:#666;
+        background: #f8f8f8;
+    }
+    .btn-panel .btn:active
+    {
+        background: #f8f8f8;
+        box-shadow: 0 0 1px #ddd;
+    }
+
+    .btn-panel-conversation .btn,.btn-panel-msg .btn
+    {
+
+        background: #f8f8f8;
+    }
+    .btn-panel-conversation .btn:first-child
+    {
+        border-right: 1px solid #ddd;
+    }
+
+    .msg-wrap .media-heading
+    {
+        color:#003bb3;
+        font-weight: 700;
+    }
+
+
+    .msg-date
+    {
+        background: none;
+        text-align: center;
+        color:#aaa;
+        border:none;
+        box-shadow: none;
+        border-bottom: 1px solid #ddd;
+    }
+
+</style>
+<script>
+    require(['jquery', 'jquery/ui'], function($){
+    scrollchatbottom = false;
+    stopevent = false; 
+    /* code for the sse starts */
+    var source = new EventSource("<?php echo $this->getAdminUrl('supportchat/supportchat/sse'); ?>");
+    source.onmessage = function(event) 
+    {
+        jsonresponse = JSON.parse(event.data);
+        newmessages = '';
+        totalnotifications = 0;
+        $.each(jsonresponse, function(key,value)
+        {
+           totalnotifications = totalnotifications+1;
+           var cust_or_visit = "";
+           var cust_or_visit_id = '';
+           if(value.visitor_id != '')
+           {
+               cust_or_visit = "visitor";
+               cust_or_visit_id = value.visitor_id;
+           }   
+           if(value.customer_id != '' && value.customer_id != 0)
+           {
+               cust_or_visit = "customer";
+               cust_or_visit_id = value.customer_id;
+           }
+           newmessages = newmessages+"<a href='#' class = 'messagenotilink' data-notificationid ='"+value.id+"'  data-chattype ='"+cust_or_visit+"' data-chatterid = '"+cust_or_visit_id+"' >"+value.customer_email_id+"</a>";
+        });
+        $('#idnotifcount').html(totalnotifications);
+        $('#myDropdown').empty().append(newmessages);
+        bindNotiEvents();
+    };
+    /*code for the see ends */
+    function startChat()
+    {       
+    messageurl = "<?php echo $this->getAdminUrl('supportchat/supportchat/messagesse'); ?>";
+    messagessource = new EventSource(messageurl);
+    messagessource.onmessage = function(event) 
+    {
+        jsonresponse = JSON.parse(event.data);
+        var allmessages = "";
+        $.each(jsonresponse, function(key,value)
+        {
+            cust_or_visit = "";
+            if (value.admin_id!=null)
+            {
+                console.log('Value:'+value.admin_id);
+                var cust_or_visit = "You:";
+            }
+            else if (value.customer_id != '' && value.customer_id != 0 && value.customer_id != null)
+            {
+                var cust_or_visit = "Customer Id: "+ value.customer_id;
+            }
+            else if (value.visitor_id != '' )
+            {
+                var cust_or_visit = "Visitor Id: "+ value.visitor_id;
+            }
+            allmessages = allmessages+"<div class='media conversation'><div class='media-body'><h5 class='media-heading'>"+cust_or_visit+"</h5><small>"+value.message+"</small></div></div>";
+        });
+        $("#idmessagesdiv").empty().append(allmessages);
+        $('#idloadgif').css('display','none');
+        $('.conversation-wrap').scrollTop( $('.conversation-wrap').height()+300 );
+    };
+    }
+
+    $('#idnotifcount').on('click',function(){
+    });
+    
+    $('#idmsgsend').keypress(function(event)
+    {
+        var keycode = (event.keyCode ? event.keyCode : event.which);
+        if(keycode == '13' && !event.shiftKey ){           
+            $.ajax({
+               url: "<?php echo $this->getAdminUrl('supportchat/supportchat/messages/'); ?>",
+               data: {message:$('#idmsgsend').val(),customerid:$('#idcustomerid').val(),visitorid:$('#idvisitorid').val()},
+               method:"GET",
+               success: function(response)
+               {
+                    
+               },
+               fail: function(response)
+               {
+                   
+               }
+            });
+            $('#idmsgsend').val('');
+        }
+        
+    });
+   
+    /*Notify( "You commented on this post.",
+			    function () {
+
+			    },
+			    function () {
+
+			    },
+				'success'
+			);*/
+                        
+    function bindNotiEvents()
+    {
+      $('.messagenotilink').on('click',function(){
+        oldcustomerid = '';
+        oldvisitorid = '';
+        if($(this).data('chattype') == 'customer'){
+           oldcustomerid = $('#idcustomerid').val();
+           $('#idcustomerid').val($(this).data('chatterid')); 
+           $('#idvisitorid').val(''); 
+        }
+        if($(this).data('chattype') == 'visitor'){
+            oldvisitorid = $('#idvisitorid').val();
+            $('#idvisitorid').val($(this).data('chatterid'));
+            $('#idcustomerid').val(''); 
+        }
+
+        $.ajax({  // ajax call to send notification for the notification has been read
+            url:"<?php echo $this->getAdminUrl('supportchat/supportchat/notifications'); ?>",
+            method:"GET",
+            data: {action:"readnoti",id:$(this).data('notificationid'),customerid:$('#idcustomerid').val(),visitorid:$('#idvisitorid').val()},
+            success: function(response){
+
+            },
+            fail: function(response){
+
+            }
+        });
+        $('#idmainmsgcontainer').attr('class','container');
+        $('#idmainmsgcontainer').addClass('visbCls');
+        $('#idloadgif').css('display','block');
+        if (oldcustomerid != $('#idcustomerid').val() && oldcustomerid != '')
+            stopevent = true; 
+        if (oldvisitorid != $('#idvisitorid').val() && oldvisitorid != '')
+            stopevent = true;
+        startChat();
+       });     
+    }
+    
+   
+    if (scrollchatbottom == true)
+    {
+        //$('.conversation-wrap').scrollTop( $('.conversation-wrap').height()+300 );
+    }
+
+    var clickedOnScrollbar = function(mouseX)
+    {
+        if( $('.conversation-wrap').outerWidth() <= mouseX )
+        {
+          return true;
+        }
+    }
+
+  $('.conversation-wrap').mousedown(function(e){
+
+    if( clickedOnScrollbar(e.clientX) ){
+     
+    }
+  });
+
+  $('.conversation-wrap').on('scroll', function() {
+    if($(this).scrollTop() + $(this).innerHeight() > $(this)[0].scrollHeight) {
+        console.log($(this).scrollTop() + $(this).innerHeight()+"::"+$(this)[0].scrollHeight);
+        scrollchatbottom =  true; 
+    }
+    else
+    {
+        scrollchatbottom = false;
+    }
+});
+ });
+
+    /* When the user clicks on the button,
+toggle between hiding and showing the dropdown content */
+function myFunction() {
+  document.getElementById("myDropdown").classList.toggle("show");
+}
+
+// Close the dropdown if the user clicks outside of it
+window.onclick = function(event) {
+  if (!event.target.matches('.dropbtn')) {
+
+    var dropdowns = document.getElementsByClassName("dropdown-content");
+    var i;
+    for (i = 0; i < dropdowns.length; i++) {
+      var openDropdown = dropdowns[i];
+      if (openDropdown.classList.contains('show')) {
+        openDropdown.classList.remove('show');
+      }
+    }
+  }
+}
+
+
+</script>
