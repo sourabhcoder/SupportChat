@@ -2,5 +2,7 @@ This is a Magento 2 module for providing customer support. Using this module you
 
 {{block class="Sourabh\SupportChat\Block\SupportChat\SupportChat" template="Sourabh_SupportChat::supportchat/supportchat.phtml" }}
 
+Note: You will have to disbale the page cache for this module to work.
+
 The above line of code will show the chat box in your required CMS page.
 For more support on this module, you can contact me on this number: +91 7097092873
