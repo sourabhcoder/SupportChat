@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../Backend/etc/menu.xsd">
+    <menu>
+        <add id="Sourabh_SupportChat::sourabh_supportchat" title="Sourabh" module="Sourabh_SupportChat"  sortOrder="10" dependsOnModule="Sourabh_SupportChat"  resource="Sourabh_SupportChat::sourabh_menuoptions"/>
+        <add id="Sourabh_SupportChat::sourabh_menu1" title="Support Chat" module="Sourabh_SupportChat" sortOrder="20"  parent="Sourabh_SupportChat::sourabh_supportchat"  action="supportchat/supportchat/index" resource="Sourabh_SupportChat::sourabh_supportchat" />
+    </menu>
+</config>
